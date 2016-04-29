@@ -1,4 +1,4 @@
-# ADMeshfree
+# Point Interpolated Newton-Rapshon Meshfree Method
 
 Keywords: Meshfree, Finite Element Analysis, Computational fluid dynamics
 
