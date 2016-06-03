@@ -57,6 +57,7 @@ Toggle on/off the equaitions to be solved.
 Create solver object
 ######pinm.Solver.addDomain(domain)
 Add domain to solver.
+#####Solve
 ######pinm.Solver.solve()
 Solve variables in domains of the solver with the equations.
 ###Additional control
@@ -88,9 +89,14 @@ a class object with function .cal(x,dOrder) (see autoD documentation)
 
 ###Function
 ######pinm.Node
-useful properties include 
+useful properties include:
 
 .pos : return the position of node (dictionary)
+
 .variable[variableIdentifier] : return variable nodal value
-.material[materialIndex][propertyIdentifier]
+
+.variableCal[variableIdentifier] : return autoDObject (for calculating true variable value with local support domain). The differential of the variable can also be calculated, i.e autoD.Differentiate(nodalObject.variableCal[variableIdentifier],{'x':1}) see equationlibrary for examples.
+
+.material[materialIndex][propertyIdentifier]: return autoDObject of property in material index of node
+
 
