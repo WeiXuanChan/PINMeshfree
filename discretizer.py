@@ -14,7 +14,6 @@ from stl import mesh
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot
 from matplotlib.widgets import Button
-import random 
     
 def stlImport(filePath,coords):
     # Create a new plot
@@ -437,12 +436,6 @@ def multiplyDictionary(a,b):
     for key in a:
         result[key]=a[key]*b
     return result
-def randonNumber(a,b):
-    #excludes boundary
-    result==a
-    while result==a or result==b:
-        result=random.uniform(a,b)
-    return result
 
 def plotNodes(nodes,coordinate=['x','y','z']):
     figure = pyplot.figure()
@@ -563,112 +556,3 @@ class DomainSelector:
                     else:
                         self.collectionList[n].set_facecolor('g')
         pyplot.draw()
-
-
-
-
-
-'''
-#old code
-
-def meshTriangle(domain,nodalDistribution):  #nodalDistribution is a function with both i/o dictionary objects     
-    toBeFurtherMeshed=[]
-    subDomain=[]
-    #check for odd triangle
-    sidelength=[0.,0.,0.]
-    maxSideLength=0.
-    minSideLength=float('inf')
-    maxSideIndex=-1
-    minSideIndex=-1
-    for n in range(len(domain.vertices)):
-        for coord in domain.vertices[0]:
-            sidelength[n]+=(domain.vertices[n][coord]-domain.vertices[n-1][coord])**2.
-        sidelength[n]=np.sqrt(sidelength[n])
-        if sidelength[n]>maxSideLength:
-            maxSideLength=sidelength[n]
-            maxSideIndex=n
-        if sidelength[n]<minSideLength:
-            minSideLength=sidelength[n]
-            minSideIndex=n
-    if maxSideLength>(minSideLength*2):#two long one short
-        newPoints=[]
-        newPoints.append(addDictionary([multiplyDictionary(domain.vertices[minSideIndex-2],minSideLength/(minSideLength+sidelength[minSideIndex-2])),
-                                        multiplyDictionary(domain.vertices[minSideIndex],sidelength[minSideIndex-2]/(minSideLength+sidelength[minSideIndex-2]))]))
-        newPoints.append(addDictionary([multiplyDictionary(domain.vertices[minSideIndex-2],minSideLength/(minSideLength+sidelength[minSideIndex-1])),
-                                        multiplyDictionary(domain.vertices[minSideIndex-1],sidelength[minSideIndex-1]/(minSideLength+sidelength[minSideIndex-1]))]))
-        triDomain=pinm.Domain('')
-        triDomain.setCentroid([newPoints[0],newPoints[1],domain.vertices[minSideIndex-2]])
-        continueMesh=meshTriangle(triDomain,nodalDistribution)
-        subDomain.append(triDomain)
-        for domain in continueMesh:
-            toBeFurtherMeshed.append(domain)
-        quadDomain=pinm.Domain('')
-        quadDomain.setCentroid([newPoints[0],newPoints[1],domain.vertices[minSideIndex-1],domain.vertices[minSideIndex]])
-        continueMesh=meshQuadrilateral(triDomain,nodalDistribution)
-        subDomain.append(quadDomain)
-        for domain in continueMesh:
-            toBeFurtherMeshed.append(domain)
-    elif np.absolute(sidelength[maxSideIndex-1]/sidelength[maxSideIndex-2]+sidelength[maxSideIndex-2]/sidelength[maxSideIndex-1]-sidelength[maxSideIndex]**2./sidelength[maxSideIndex-1]/sidelength[maxSideIndex-2])<1: #more than 60 degree
-        newPoint=multiplyDictionary(addDictionary([domain.vertices[maxSideIndex],domain.vertices[maxSideIndex-1]]),0.5)
-        tri1Domain=pinm.Domain('')
-        tri1Domain.setCentroid([newPoint,domain.vertices[maxSideIndex],domain.vertices[maxSideIndex-2]])
-        continueMesh=meshTriangle(tri1Domain,nodalDistribution)
-        subDomain.append(tri1Domain)
-        for domain in continueMesh:
-            toBeFurtherMeshed.append(domain)
-        tri2Domain=pinm.Domain('')
-        tri2Domain.setCentroid([newPoint,domain.vertices[maxSideIndex-2],domain.vertices[maxSideIndex-1]])
-        continueMesh=meshTriangle(tr2Domain,nodalDistribution)
-        subDomain.append(tri2Domain)
-        for domain in continueMesh:
-            toBeFurtherMeshed.append(domain)
-    else:
-        midPoints=[]
-        for n in range(2):
-            midPoints.append(multiplyDictionary(addDictionary([domain.vertices[n],domain.vertices[n+1]]),0.5))
-        midPoints.append(multiplyDictionary(addDictionary([domain.vertices[2],domain.vertices[0]]),0.5))
-        for n in range(3):
-            temp_subdomain=pinm.Domain('',norm=domain.normalVector)
-            temp_vertices=[midPoints[n-1],domain.vertices[n],midPoints[n],domain.pos]
-            temp_subdomain.setCentroid(temp_vertices)
-            for toBeFurtherMeshedDomain in meshQuadrilateral(temp_subdomain,nodalDistribution):
-                toBeFurtherMeshed.append(toBeFurtherMeshedDomain)
-            subDomain.append(temp_subdomain)
-    domain.addNode(subDomain)
-    return toBeFurtherMeshed
-def meshQuadrilateral(domain,nodalDistribution):  #nodalDistribution is a function with both i/o dictionary objects     
-    toBeFurtherMeshed=[]
-    NodeSpacing=nodalDistribution(domain.pos)
-    addNodeInstead=True
-    for coord in domain.maxDistance:
-        if domain.maxDistance[coord]>NodeSpacing[coord]:
-            addNodeInstead=False
-    midPoints=[]
-    for n in range(3):
-        midPoints.append(multiplyDictionary(addDictionary([domain.vertices[n],domain.vertices[n+1]]),0.5))
-    midPoints.append(multiplyDictionary(addDictionary([domain.vertices[3],domain.vertices[0]]),0.5))
-    subDomain=[]
-    for n in range(4):
-        temp_subdomain=pinm.Domain('',norm=domain.normalVector)
-        temp_vertices=[midPoints[n-1],domain.vertices[n],midPoints[n],domain.pos]
-        temp_subdomain.setCentroid(temp_vertices)
-        if addNodeInstead:
-            temp_node=pinm.Node(temp_subdomain.pos,norm=domain.normalVector)
-            subDomain.append(temp_node)
-        else:
-            toBeFurtherMeshed.append(temp_subdomain)
-            subDomain.append(temp_subdomain)
-    domain.addNode(subDomain)
-    return toBeFurtherMeshed
-def meshSurfaceDomainQuad(subDomain,nodalDistribution):
-    for domain in subDomain:
-        for sub2domain in domain.subDomain:
-            toBeFurtherMeshed=meshTriangle(sub2domain,nodalDistribution)
-            while len(toBeFurtherMeshed)>0:
-                copy_toBeFurtherMeshed=toBeFurtherMeshed
-                toBeFurtherMeshed=[]
-                for new_domain in copy_toBeFurtherMeshed:
-                    for temp_domain in meshQuadrilateral(new_domain,nodalDistribution):
-                        toBeFurtherMeshed.append(temp_domain)
-    return;
-'''
