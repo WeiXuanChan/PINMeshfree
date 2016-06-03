@@ -17,7 +17,7 @@ AutoD - https://github.com/WeiXuanChan/autoD
 
 General numerical solver using automatic differentiation and Point Interpolation Method with Meshfree Method.
 
-Enables user defined governing equation (non-linear accepted), material properties and basis.
+Enables user defined governing equation (linear, non-linear), material properties and basis.
 
 ###Work flow
 Import -> Mesh -> Filter and Link Nodes -> Setup Solver (variables, equations, material) -> see results (detailed postprocessing currently in progress)
