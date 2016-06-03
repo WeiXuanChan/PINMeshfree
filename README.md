@@ -15,6 +15,12 @@ AutoD - https://github.com/WeiXuanChan/autoD
 
 ###Description
 
-Meshfree (FEM) numerical solver using automatic differentiation
+General numerical solver using automatic differentiation and Point Interpolation Method with Meshfree Method.
 
-#####Coding in progress
+Enables user defined governing equation (non-linear accepted), material properties and basis.
+
+###Work flow
+Import -> Mesh -> Filter and Link Nodes -> setup Solver (variables, equations, material) -> see results (detailed postprocessing currently in progress)
+###Function
+######pinm
+
