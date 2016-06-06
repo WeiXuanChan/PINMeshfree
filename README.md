@@ -79,6 +79,11 @@ Save current session to the last FILENAME used.
 Load session from FILENAME to current session.
 ######pinm.setSessionAsCurrent(sessionObject)
 set any sessionObject as current session
+#####See results
+######discretizer.findNodes(position,domainList,distance=None,searchDepth=-1.)
+Find nodes in domainList at a distance from position. position input is dictionary.
+######discretizer.plotNodes(nodes,coordinate=['x','y','z'],variableIdentifier='',complex='real')
+plot nodes (list) in 3d. If variableIdentifier is specified, it will plot in color according to the value of the variable. Options for complex include 'real', 'imag' and 'abs' for ploting real, imaginary and absolute value.
 #####Glossary
 ######nodalDistribution
 a user defined function: outputDict=nodalDistribution(inputDict), where the spacing of the node (e.g {'x':0.1,'y':0.1,'z':0.2}) is calculated with a position (e.g {'x':1,'y':3,'z',2}) input.
