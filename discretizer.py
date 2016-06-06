@@ -13,8 +13,9 @@ from . import pinm as pinm
 from stl import mesh
 from mpl_toolkits import mplot3d
 from matplotlib import pyplot
+from matplotlib import colors as Colors
 from matplotlib.widgets import Button
-    
+import matplotlib.cm as cmx
 def stlImport(filePath,coords):
     # Create a new plot
     figure = pyplot.figure()
@@ -448,17 +449,33 @@ def multiplyDictionary(a,b):
         result[key]=a[key]*b
     return result
 
-def plotNodes(nodes,coordinate=['x','y','z']):
+def plotNodes(nodes,coordinate=['x','y','z'],variableIdentifier='',complex='real'):
+    
     figure = pyplot.figure()
     axes = mplot3d.Axes3D(figure)
     coordinateKey=[]
+    var=[]
     numOfNodes=len(nodes)
     coords=np.zeros((3,numOfNodes))
     for n in range(numOfNodes):
         for m in range(len(coords)):
             coords[m][n]=nodes[n].pos[coordinate[m]]
-            
-    axes.scatter(coords[0], coords[1], coords[2])
+        if variableIdentifier!='':
+            if complex=='real':
+                var.append(nodes[n].variable[variableIdentifier].real)
+            elif complex=='imag':
+                var.append(nodes[n].variable[variableIdentifier].imag)
+            elif complex=='abs':
+                var.append(np.absolute(nodes[n].variable[variableIdentifier]))
+    if variableIdentifier!='':
+        cm = pyplot.get_cmap('jet')
+        cNorm = Colors.Normalize(vmin=min(var), vmax=max(var))
+        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)        
+        axes.scatter(coords[0], coords[1], coords[2],c=scalarMap.to_rgba(var))
+        scalarMap.set_array(var)
+        figure.colorbar(scalarMap)
+    else:
+        axes.scatter(coords[0], coords[1], coords[2])
     pyplot.show()
 
           
